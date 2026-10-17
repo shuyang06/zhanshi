@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>反方 · 答辩前先被问倒一次</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f8f6;--card:#fff;--ink:#0f2419;--sub:#5b7268;--line:#dce8e1;--accent:#00b96b;--accent2:#0a8f5a;--warn:#e8734a;--danger:#d94f4f}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 20px 80px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#00d47e,#068d55);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:19px;box-shadow:0 6px 18px rgba(0,185,107,.28)}
+h1{font-size:21px;letter-spacing:.3px}
+.tag{font-size:12px;color:var(--sub);font-weight:400;margin-top:1px}
+.badge{font-size:12px;padding:5px 11px;border-radius:999px;background:#e6f7ef;color:var(--accent2);border:1px solid #c6ebd9;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(15,36,25,.04)}
+h2{font-size:15px;display:flex;align-items:center;gap:9px;margin-bottom:14px}
+h2 .n{width:22px;height:22px;border-radius:7px;background:#e6f7ef;color:var(--accent2);font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.types{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.type{padding:9px 15px;border:1px solid var(--line);border-radius:10px;background:#fbfdfc;cursor:pointer;font-size:14px;transition:.15s}
+.type:hover{border-color:#a9e0c6}
+.type.on{border-color:var(--accent);background:#eafaf2;color:var(--accent2);font-weight:600}
+textarea{width:100%;min-height:132px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px;resize:vertical;background:#fbfdfc;color:var(--ink)}
+textarea:focus{outline:none;border-color:var(--accent);background:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px;align-items:center}
+button{font-family:inherit;font-size:14px;padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;transition:.15s;color:var(--ink)}
+button:hover{border-color:#a9e0c6;background:#f7fdfa}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(0,185,107,.25)}
+button.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+button.ghost{background:transparent}
+button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.hint{font-size:12.5px;color:var(--sub);margin-left:auto}
+.diag{display:none;gap:26px;align-items:center;flex-wrap:wrap}
+.diag.show{display:flex}
+.radar{flex:0 0 260px}
+.bars{flex:1;min-width:260px}
+.bar{margin-bottom:11px}
+.bar .t{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.bar .t b{font-variant-numeric:tabular-nums}
+.track{height:8px;background:#eef4f1;border-radius:6px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:6px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.sig{font-size:12.5px;color:var(--sub);margin-top:8px;padding:8px 11px;background:#fafcfb;border-left:2px solid var(--accent);border-radius:0 8px 8px 0}
+.qlist{display:flex;flex-direction:column;gap:13px}
+.q{border:1px solid var(--line);border-radius:13px;padding:15px 16px;background:#fff;animation:in .35s ease both}
+@keyframes in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.q .top{display:flex;align-items:center;gap:8px;margin-bottom:7px;flex-wrap:wrap}
+.dim{font-size:11.5px;padding:2px 9px;border-radius:6px;background:#eef4f1;color:#42604f}
+.pw{font-size:11.5px;color:var(--warn)}
+.pw i{font-style:normal;letter-spacing:-1px}
+.qt{font-size:15px;font-weight:600;line-height:1.55}
+.why{font-size:12.5px;color:var(--sub);margin-top:7px;padding-left:9px;border-left:2px solid #ffe0d2}
+.ans{margin-top:11px;display:none}
+.ans.show{display:block}
+.ans textarea{min-height:76px;font-size:13.5px}
+.verdict{margin-top:9px;font-size:13px;padding:10px 12px;border-radius:9px;display:none}
+.verdict.show{display:block}
+.verdict.bad{background:#fdeeee;color:#9a2b2b}
+.verdict.mid{background:#fdf6e8;color:#8a5a12}
+.verdict.good{background:#eafaf2;color:#0a6b45}
+.follow{margin-top:8px;font-size:13px;font-weight:600;color:var(--danger)}
+.follow::before{content:"追问 → "}
+.card-final{background:linear-gradient(180deg,#fbfffd,#f4fbf7);border:1px solid #c6ebd9}
+.kv{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.kv div{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+.kv b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+.kv span{font-size:12px;color:var(--sub)}
+.kv .hi b{color:var(--danger)}.kv .mid b{color:var(--warn)}.kv .ok b{color:var(--accent2)}
+pre.md{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;font-size:13px;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;line-height:1.75;max-height:340px;overflow:auto}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0f2419;color:#fff;padding:11px 20px;border-radius:11px;font-size:13.5px;opacity:0;transition:.28s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.foot{text-align:center;font-size:12px;color:#93a89d;margin-top:26px}
+@media print{body{background:#fff}.card{box-shadow:none;break-inside:avoid}.noprint{display:none!important}.card-final{border:1px solid #ccc}}
+@media(max-width:720px){.radar{flex:0 0 100%}.wrap{padding:16px 14px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="noprint">
+    <div class="brand">
+      <div class="logo">反</div>
+      <div>
+        <h1>反方 <span style="font-weight:400;color:#93a89d;font-size:14px">Devil's Advocate</span></h1>
+        <div class="tag">答辩之前，先被问倒一次 —— 你的方案能扛住几个你自己没想到的问题？</div>
+      </div>
+    </div>
+    <div class="badge">离线引擎 v1.0 · 无需联网</div>
+  </header>
+
+  <div class="card noprint">
+    <h2><span class="n">1</span>把你的方案交出来</h2>
+    <div class="types" id="types">
+      <div class="type on" data-k="course">课程项目答辩</div>
+      <div class="type" data-k="club">社团活动路演</div>
+      <div class="type" data-k="startup">创新大赛计划书</div>
+      <div class="type" data-k="intern">实习 / 校招面试</div>
+    </div>
+    <textarea id="src" placeholder="粘贴你的方案、PPT 文案、讲稿或简历里的项目段落。越像你真实的稿子，问得越准。&#10;&#10;（不知道写什么？点下面的「填入示例」）"></textarea>
+    <div class="row">
+      <button class="primary" id="btnRun">开始评审</button>
+      <button id="btnDemo">一键演示（60 秒）</button>
+      <button class="ghost" id="btnSample">填入示例</button>
+      <button class="ghost" id="btnClear">清空</button>
+      <span class="hint" id="hint">已输入 0 字</span>
+    </div>
+  </div>
+
+  <div class="card" id="diagCard" style="display:none">
+    <h2><span class="n">2</span>方案体检：先看你最容易被捅穿的地方</h2>
+    <div class="diag" id="diag">
+      <div class="radar"><svg id="radarSvg" viewBox="0 0 240 240" width="100%"></svg></div>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="sig" id="sigText"></div>
+  </div>
+
+  <div class="card" id="reviewCard" style="display:none">
+    <h2><span class="n">3</span>评审团开问 <span style="font-weight:400;color:var(--sub);font-size:12.5px" id="qcount"></span></h2>
+    <div class="qlist" id="qlist"></div>
+  </div>
+
+  <div class="card card-final" id="finalCard" style="display:none">
+    <h2><span class="n">4</span>答辩作战卡</h2>
+    <div class="kv" id="kv"></div>
+    <pre class="md" id="mdOut"></pre>
+    <div class="row noprint">
+      <button class="primary" id="btnPrint">打印 / 存 PDF</button>
+      <button id="btnDl">下载 Markdown</button>
+      <button class="ghost" id="btnAgain">换个方案再来</button>
+    </div>
+  </div>
+
+  <div class="foot noprint">反方 · Devil's Advocate ｜ 参赛原型 · 离线可用 · 数据不出本机</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var BANK = {
+  course: [
+    {d:"证据力",q:"你说的「效率提升了」，具体是从多少到多少？谁测的？",w:3,why:"你的方案里几乎没有可核对的数字，只说了形容词。",f:"如果换成「我不知道」——那你怎么知道它有用？"},
+    {d:"差异化",q:"这个功能，同学为什么不用现成的工具？",w:3,why:"全文没有出现任何对比对象。",f:"那你的价值是「更方便」，还是「别人做不到」？"},
+    {d:"边界感",q:"如果只给你一周，你会砍掉哪个模块？",w:2,why:"你的方案里没有「不做」，只有「都做」。",f:"砍掉之后，演示还成立吗？"},
+    {d:"落地性",q:"数据是自己标的还是公开数据集？标了多少条、谁标的？",w:2,why:"你提到了数据，但没说清来源和规模。",f:"两个人标 500 条，一致性怎么保证？"},
+    {d:"抗风险",q:"现场演示卡住了怎么办？",w:3,why:"全篇没有出现「如果 / 兜底 / 备用」。",f:"备用方案是截图，还是另一条链路？"},
+    {d:"证据力",q:"你说「用户觉得好用」，你问了几个人？怎么问的？",w:2,why:"「用户觉得」出现了，但背后没有样本。",f:"问自己的室友算不算调研？"},
+    {d:"创新性",q:"这个想法是你先想到的，还是先看到别人的再改的？",w:2,why:"没有说清创新的来源。",f:"如果别人也想到了，你的优势在哪？"}
+  ],
+  club: [
+    {d:"证据力",q:"预计 200 人报名的依据是什么？去年是多少？",w:3,why:"数字很整齐，但看不到推算过程。",f:"如果只来 40 人，这场活动还成立吗？"},
+    {d:"抗风险",q:"下雨、场地被占、嘉宾放鸽子，你的备案分别是什么？",w:3,why:"方案里没有任何风险假设。",f:"三个预案同时触发，你先保哪个？"},
+    {d:"边界感",q:"预算里哪一项最可能超支？你留了多少余量？",w:2,why:"预算只写了总额，没有缓冲项。",f:"超支部分谁签字？"},
+    {d:"证据力",q:"「同学们都很期待」——你调研了多少人？",w:2,why:"用情绪词代替了数据。",f:"期待和到场之间，差的常常是天气。"},
+    {d:"差异化",q:"和往年的同类活动比，这一届真正的不同是什么？",w:2,why:"没有出现与往届或同类活动的对照。",f:"如果只是换了主题，为什么值得再来一次？"},
+    {d:"落地性",q:"执行人手从哪来？现在确定了几个人？",w:3,why:"你写了流程，但没写执行主体。",f:"三个人的社团办 200 人的活动，谁在现场控场？"},
+    {d:"落地性",q:"活动结束后，能留下什么第二次还能用的东西？",w:2,why:"方案结束在「圆满举办」，没有沉淀。",f:"下次办，是从零开始还是复用？"}
+  ],
+  startup: [
+    {d:"证据力",q:"获客成本算过没有？第一批 100 个用户具体从哪来？",w:3,why:"通篇是市场描述，没有单位经济模型。",f:"如果只能靠一个一个拉，你能拉多少个？"},
+    {d:"差异化",q:"大厂明年做这个，你剩下什么？",w:3,why:"没有出现任何竞争格局的判断。",f:"你的壁垒是数据、场景，还是只是先做了三个月？"},
+    {d:"边界感",q:"你不做什么？说三件明确不做的事。",w:3,why:"你的范围写得很大，反而让人不敢相信。",f:"什么都做，是不是等于什么都做不深？"},
+    {d:"抗风险",q:"如果三个月没有增长，你先砍哪一块？",w:2,why:"计划里只有顺境，没有止损线。",f:"砍完之后，公司还剩下什么？"},
+    {d:"证据力",q:"有几个人真的为这个痛点花过钱或花过时间？",w:3,why:"痛点是推断出来的，不是观察到的。",f:"愿意花时间 ≠ 愿意付钱，你怎么区分？"},
+    {d:"落地性",q:"团队三个人，谁全职？谁在做这件事上花了最多小时？",w:2,why:"团队介绍只写了背景，没写投入。",f:"如果只有一个人能全职，先砍谁的工作？"},
+    {d:"完成度",q:"现在跑通的是一条完整的链，还是几个孤立的功能？",w:2,why:"你列了很多能力，但没说它们怎么串起来。",f:"从用户进来到拿到结果，中间断在哪一步？"}
+  ],
+  intern: [
+    {d:"证据力",q:"这个项目你具体负责哪一部分？能不能说清你写的那几行代码在干什么？",w:3,why:"描述里全是「我们」，看不到「我」。",f:"如果换成别人做，结果会不一样吗？"},
+    {d:"证据力",q:"效果怎么衡量的？有对比组吗？",w:3,why:"提到了结果，但缺基线和口径。",f:"提升 20% 是和谁比、在什么条件下比的？"},
+    {d:"抗风险",q:"最难的一次卡点是什么？你怎么定位到它的？",w:3,why:"通篇没有失败与排查过程。",f:"如果当时定位不到，你的下一步是什么？"},
+    {d:"边界感",q:"如果重做一次，你会砍掉什么？",w:2,why:"没有取舍，说明没有真正做过决策。",f:"当时为什么没砍？是没意识到还是没权力？"},
+    {d:"差异化",q:"为什么用这个方案，而不是最简单的那种做法？",w:2,why:"方案看起来很顺，反而像事后总结。",f:"你考虑过哪些被否掉的方案？"},
+    {d:"落地性",q:"时间怎么排的？延期了吗？延期时你怎么处理？",w:2,why:"只有结果，没有过程与协作。",f:"谁 push 的你？你自己 push 过别人吗？"},
+    {d:"创新性",q:"有没有哪个决定是你自己拍的，不是别人告诉你的？",w:3,why:"描述里没有出现你的判断。",f:"如果那个决定错了，责任在谁？"}
+  ]
+};
+
+var SAMPLES = {
+  course: "我们的课程项目叫「智能错题本」，目标是帮助同学高效复习。我们做了一个网页，可以上传题目截图，系统会自动识别并归类到知识点，然后生成复习计划。我们觉得这个功能很有价值，因为复习的时候大家都很痛苦。我们还做了错题统计、知识点图谱和每日提醒三个模块。老师说这个想法不错，同学们试用之后也觉得挺好用的。目前已经完成了主要功能，界面也比较美观。",
+  club: "本次活动是「校园 AI 创意市集」，计划在中心广场举办，预计参与人数 200 人左右，设置 12 个摊位和 3 场分享。预算 3000 元，用于物料、场地和嘉宾礼品。宣传通过公众号推文、班级群和海报三种方式，预计一周内完成。活动流程包括开场、市集、分享、抽奖和合影，整体氛围轻松有趣，希望能吸引更多同学了解 AI。我们已经联系了几位学长来分享，大家都表示支持。",
+  startup: "我们的项目是面向大学生的 AI 学习助手，通过大模型帮助用户整理笔记、生成复习计划和答疑。市场空间很大，全国有 4000 万大学生，如果渗透率达到 5%，就是 200 万用户。我们的优势是更懂学生，界面更简洁，价格更低。商业模式是订阅制，每月 9.9 元。团队三人，分别负责产品、技术和运营。目前完成了 MVP，正在寻找第一批用户。",
+  intern: "我在实习期间参与了一个数据平台项目，负责后端开发和部分前端工作。我们团队一共五个人，用了三个月时间完成上线。我主要做了接口开发和数据清洗，也参与了一些需求讨论。项目上线后运行稳定，用户反馈良好，性能也有明显提升。通过这次实习，我学到了很多工程实践的经验，也提升了团队协作能力，希望能在贵公司继续成长。"
+};
+
+var DIMS = ["证据力","差异化","边界感","抗风险","落地性"];
+var DIM_COLOR = {"证据力":"#00b96b","差异化":"#3aa0e6","边界感":"#8b7ce8","抗风险":"#e8734a","落地性":"#0aa4a0"};
+var state = {type:"course", total:0, answered:0, score:null};
+
+function $(s){return document.querySelector(s)}
+function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove("show")},2100)}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+$("#types").addEventListener("click",function(e){
+  var t=e.target.closest(".type"); if(!t) return;
+  document.querySelectorAll(".type").forEach(function(x){x.classList.remove("on")});
+  t.classList.add("on"); state.type=t.dataset.k;
+});
+$("#src").addEventListener("input",function(){
+  $("#hint").textContent="已输入 "+$("#src").value.replace(/\s/g,"").length+" 字";
+});
+$("#btnSample").onclick=function(){ $("#src").value=SAMPLES[state.type]; $("#src").dispatchEvent(new Event("input")); toast("已填入示例，可直接点「开始评审」"); };
+$("#btnClear").onclick=function(){ $("#src").value=""; $("#src").dispatchEvent(new Event("input")); };
+$("#btnPrint").onclick=function(){ window.print(); };
+$("#btnAgain").onclick=function(){ location.reload(); };
+$("#btnRun").onclick=function(){ run(); };
+
+function diagnose(text){
+  var n=text.replace(/\s/g,"").length;
+  var digits=(text.match(/[0-9]+(\.[0-9]+)?/g)||[]).length;
+  var scores={}, notes=[];
+  DIMS.forEach(function(d){
+    var s=52;
+    if(d==="证据力"){ s=38+Math.min(46,digits*11); if(digits===0) notes.push("全文 0 个有效数据点 —— 任何一句「提升明显」都会被追问三遍"); }
+    if(d==="差异化"){ var ok1=/对比|相比|竞品|同类|已有|别的|往届/.test(text); s=ok1?76:34; if(!ok1) notes.push("没有任何对比对象 —— 评委无法判断你比「凑合方案」好在哪"); }
+    if(d==="边界感"){ var ok2=/不做|不考虑|暂不|边界|局限|砍掉/.test(text); s=ok2?74:36; if(!ok2) notes.push("没有说「不做什么」 —— 范围越大，越像没想过"); }
+    if(d==="抗风险"){ var ok3=/风险|失败|如果|兜底|备用|预案|万一/.test(text); s=ok3?73:33; if(!ok3) notes.push("没有假设过失败 —— 一问「卡住怎么办」就会露底"); }
+    if(d==="落地性"){ var ok4=/周|月|天|小时|人|步骤|流程|模块/.test(text); s=ok4?72:41; if(!ok4) notes.push("看不到时间与人力 —— 方案悬在空中"); }
+    if(n<220) s-=6;
+    scores[d]=Math.max(12,Math.min(96,Math.round(s)));
+  });
+  var avg=Math.round(DIMS.reduce(function(a,d){return a+scores[d]},0)/5);
+  return {scores:scores,avg:avg,notes:notes,digits:digits,len:n};
+}
+
+function radar(scores){
+  var cx=120,cy=118,R=86,N=5,pts=[];
+  var svg="<g>";
+  for(var ring=1;ring<=4;ring++){
+    var p=[];
+    for(var i=0;i<N;i++){
+      var a=-Math.PI/2+i*2*Math.PI/N, r=R*ring/4;
+      p.push((cx+r*Math.cos(a)).toFixed(1)+","+(cy+r*Math.sin(a)).toFixed(1));
+    }
+    svg+='<polygon points="'+p.join(" ")+'" fill="none" stroke="#e6eeea" stroke-width="1"/>';
+  }
+  for(var i2=0;i2<N;i2++){
+    var a2=-Math.PI/2+i2*2*Math.PI/N;
+    svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R*Math.cos(a2)).toFixed(1)+'" y2="'+(cy+R*Math.sin(a2)).toFixed(1)+'" stroke="#e6eeea"/>';
+  }
+  DIMS.forEach(function(d,i3){
+    var a3=-Math.PI/2+i3*2*Math.PI/N, r3=R*scores[d]/100;
+    pts.push((cx+r3*Math.cos(a3)).toFixed(1)+","+(cy+r3*Math.sin(a3)).toFixed(1));
+    var lx=cx+(R+20)*Math.cos(a3), ly=cy+(R+20)*Math.sin(a3);
+    svg+='<text x="'+lx.toFixed(1)+'" y="'+(ly+4).toFixed(1)+'" font-size="11" fill="#5b7268" text-anchor="middle">'+d+'</text>';
+  });
+  svg+='<polygon points="'+pts.join(" ")+'" fill="rgba(0,185,107,.18)" stroke="#00b96b" stroke-width="2"/>';
+  svg+=pts.map(function(p){var xy=p.split(",");return '<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="3" fill="#00b96b"/>'}).join("");
+  svg+="</g>";
+  $("#radarSvg").innerHTML=svg;
+}
+
+function renderBars(scores){
+  var h="";
+  DIMS.forEach(function(d){
+    var v=scores[d], c=v<45?"#d94f4f":(v<65?"#e8734a":"#00b96b");
+    h+='<div class="bar"><div class="t"><span>'+d+'</span><b style="color:'+c+'">'+v+'</b></div><div class="track"><div class="fill" style="width:'+v+'%;background:'+c+'"></div></div></div>';
+  });
+  $("#bars").innerHTML=h;
+}
+
+function pickQuestions(diag){
+  var pool=BANK[state.type].slice();
+  var weak=DIMS.slice().sort(function(a,b){return diag.scores[a]-diag.scores[b]});
+  pool.sort(function(a,b){
+    var wa=weak.indexOf(a.d), wb=weak.indexOf(b.d);
+    if(wa!==wb) return wa-wb;
+    return b.w-a.w;
+  });
+  return pool.slice(0,6);
+}
+
+function relevance(q,a){
+  var norm=function(s){return (s||"").replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,"")};
+  var kq=norm(q), aa=norm(a);
+  if(kq.length<4) return 1;
+  var hit=0,total=0;
+  for(var i=0;i+2<=kq.length;i+=2){ var g=kq.substr(i,2); total++; if(aa.indexOf(g)>=0) hit++; }
+  return total? hit/total : 1;
+}
+
+// 复述检测：回答里有多少字是问题里没有的（新信息率）
+function novelty(q,a){
+  var norm=function(s){return (s||"").replace(/[^一-龥A-Za-z0-9]/g,"")};
+  var qn=norm(q), an=norm(a), set={};
+  for(var i=0;i<qn.length;i++) set[qn.charAt(i)]=1;
+  var novel=0;
+  for(var j=0;j<an.length;j++) if(!set[an.charAt(j)]) novel++;
+  return an.length? novel/an.length : 0;
+}
+// 复述题面：问题里的三字片段有多少原样出现在回答里
+function restated(q,a){
+  var norm=function(s){return (s||"").replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,"")};
+  var qn=norm(q), an=norm(a);
+  if(qn.length<6) return 0;
+  var hit=0,total=0;
+  for(var i=0;i+3<=qn.length;i++){ var g=qn.substr(i,3); total++; if(an.indexOf(g)>=0) hit++; }
+  return total? hit/total : 0;
+}
+// 新数字：回答里出现、但问题里没有的数字
+function newDigits(q,a){
+  var qn=(q||""), nums=(a||"").match(/[0-9]+(\.[0-9]+)?/g)||[];
+  var seen={}, n=0;
+  for(var i=0;i<nums.length;i++){
+    if(seen[nums[i]]) continue;
+    seen[nums[i]]=1;
+    if(qn.indexOf(nums[i])<0) n++;
+  }
+  return n;
+}
+// 否定句：把「我们没有风险」当成“提到了风险”
+function negatedOnly(text){
+  var neg=/(没有|没|无|缺乏|尚未|谈不上)[^，。；！？]{0,6}(风险|预案|兜底|备用|万一|对比|竞品)/g;
+  var pos=/(风险|预案|兜底|备用|万一)/g;
+  var posCount=((text||"").match(pos)||[]).length;
+  var negCount=((text||"").match(neg)||[]).length;
+  return negCount>0 && negCount>=posCount;
+}
+
+function judge(a,q){
+  a=(a||"").trim();
+  if(a.length<8) return {s:0,k:"bad",t:"等于没回答。评委只会把你的沉默理解成「没想过」。"};
+  var s=0, notes=[];
+  if(a.length>=30) s+=28;
+  if(a.length>=90) s+=15;
+  if(newDigits(q,a)>0) s+=22; else if(/[0-9]/.test(a)) notes.push("数字是从题目里抄来的，不算证据");
+  if(/因为|所以|由于/.test(a)) s+=10;
+  if(/例如|比如|具体|当时|那次/.test(a)) s+=12;
+  if(/(去年|上周|上次|当时|那次|第\s*[0-9一二三四五六七八九十]+\s*(页|张|条|人|场|次)|\d+\s*(张|条|人|场|次|分钟|小时|天))/.test(a)) s+=12;
+  if(/没有|不足|其实|承认|不知道|不确定/.test(a)) s+=10;
+  if(negatedOnly(a)){ s=Math.min(s-12,45); notes.push("你说的是「没有风险/没有预案」——否定句不等于你准备了预案"); }
+  s=Math.max(0,Math.min(98,s));
+
+  var rel=relevance(q,a);
+  if(rel<0.15){
+    return {s:Math.min(s,38),k:"bad",rel:rel,
+      t:"回应度 "+Math.round(rel*100)+"% —— 你答的不是我问的那件事。字数和数字都救不了它。"};
+  }
+  var nv=novelty(q,a);
+  var rst=restated(q,a);
+  if(rst>=0.7){
+    return {s:Math.min(s,42),k:"bad",rel:rel,rst:rst,
+      t:"你把题目原样复述了 "+Math.round(rst*100)+"% —— 复述题面、后面接多少字数都刷不上去。评委要的是你的答案，不是你的朗读。"};
+  }
+  var k = s<45?"bad":(s<70?"mid":"good");
+  var t = s<45?"这答法会被追问三分钟。缺少具体事实。"
+        :(s<70?"过关，但不够硬：有态度没有证据。":"可以停在这里 —— 有事实、有边界、有退路。");
+  if(rel<0.35) t += "（回应度仅 "+Math.round(rel*100)+"%，评委会觉得你在绕）";
+  if(notes.length) t += "（" + notes.join("；") + "）";
+  return {s:s,k:k,t:t,rel:rel,nv:nv};
+}
+
+function qCard(q,idx){
+  var stars=""; for(var i=0;i<3;i++) stars+= i<q.w?"★":"☆";
+  var c=DIM_COLOR[q.d]||"#42604f";
+  var el=document.createElement("div");
+  el.className="q";
+  el.innerHTML='<div class="top"><span class="dim" style="color:'+c+';background:'+c+'1a">'+q.d+'</span><span class="pw">杀伤力 <i>'+stars+'</i></span></div>'+
+    '<div class="qt">Q'+(idx+1)+'. '+q.q+'</div>'+
+    '<div class="why">为什么问你：'+q.why+'</div>'+
+    '<div class="ans"><textarea placeholder="用你自己的话回答，别背稿。答完点「让 AI 复评」"></textarea>'+
+    '<div class="row"><button class="primary">让 AI 复评</button><span class="hint">回答越具体，分数越真实</span></div></div>'+
+    '<div class="verdict"></div>';
+  el.querySelector("button").onclick=function(){
+    var v=judge(el.querySelector("textarea").value, q.q);
+    var box=el.querySelector(".verdict");
+    box.className="verdict show "+v.k;
+    box.innerHTML="复评："+v.s+" 分 · "+v.t+(v.s<70?'<div class="follow">'+q.f+'</div>':"");
+    state.answered++;
+  };
+  el.querySelector(".qt").onclick=function(){ el.querySelector(".ans").classList.toggle("show") };
+  el.querySelector(".qt").style.cursor="pointer";
+  return el;
+}
+
+function buildFinal(qs,diag){
+  var sorted=qs.slice().sort(function(a,b){return b.w-a.w});
+  $("#kv").innerHTML='<div class="'+(diag.avg<55?"hi":(diag.avg<72?"mid":"ok"))+'"><b>'+diag.avg+'</b><span>方案体检总分</span></div>'+
+    '<div class="hi"><b>'+sorted.length+'</b><span>必被追问的问题</span></div>'+
+    '<div class="mid"><b>'+sorted.filter(function(q){return q.w===3}).length+'</b><span>高危（答错就扣分）</span></div>'+
+    '<div class="ok"><b>'+(100-Math.min(9,Math.floor(sorted.length*1.6)))+'%</b><span>准备后的通过率预估</span></div>';
+
+  var weak=DIMS.slice().sort(function(a,b){return diag.scores[a]-diag.scores[b]}).slice(0,2);
+  var names={course:"课程项目答辩",club:"社团活动路演",startup:"创新大赛计划书",intern:"实习/校招面试"};
+  var fix={};
+  fix["证据力"]="把你稿子里所有「明显/大幅/很」替换成一个数字，没有数字就写「尚未测量」";
+  fix["差异化"]="加一句「和 X 相比，我们在 Y 上不同」，X 必须是真实存在的方案";
+  fix["边界感"]="加一句「这次不做 C，因为 D」，评委会立刻相信你想清楚了";
+  fix["抗风险"]="加一句「如果 E 发生，我们退到 F」，兜底本身就是能力证明";
+  fix["落地性"]="把流程写成「谁、在几天内、做完哪一步」，把模糊的「推进」换成动作";
+
+  var md="";
+  md+="【答辩作战卡】"+new Date().toLocaleDateString("zh-CN")+"\n";
+  md+="场景："+names[state.type]+"\n";
+  md+="体检："+DIMS.map(function(d){return d+" "+diag.scores[d]}).join(" / ")+"（总分 "+diag.avg+"）\n\n";
+  md+="一、最可能被问倒的 5 题（按杀伤力排序）\n";
+  sorted.slice(0,5).forEach(function(q,i){
+    md+=(i+1)+". 【"+q.d+"】"+q.q+"\n   答法骨架：先承认边界 → 给一个具体数字 → 说下一步怎么补。\n";
+  });
+  md+="\n二、改稿两处（改完立刻加分）\n";
+  md+="1. "+weak[0]+"（"+diag.scores[weak[0]]+" 分）："+fix[weak[0]]+"\n";
+  md+="2. "+weak[1]+"（"+diag.scores[weak[1]]+" 分）："+fix[weak[1]]+"\n";
+  md+="\n三、上场前 60 秒自检\n";
+  md+="□ 每个数字都能说出它从哪来\n□ 能一句话说清「我们和别人的差别」\n□ 最怕被问的那一题，已经准备好了\n";
+  $("#mdOut").textContent=md;
+  $("#finalCard").style.display="block";
+  setTimeout(function(){$("#finalCard").scrollIntoView({behavior:"smooth",block:"start"})},220);
+}
+
+async function run(){
+  var text=$("#src").value.trim();
+  if(text.length<20){ toast("先写点内容，或者点「填入示例」"); return; }
+  $("#btnRun").disabled=true; $("#btnDemo").disabled=true;
+
+  var diag=diagnose(text);
+  state.score=diag;
+  $("#diagCard").style.display="block";
+  $("#diag").classList.add("show");
+  renderBars(diag.scores); radar(diag.scores);
+  $("#sigText").textContent = diag.notes.length ? ("体检结论："+diag.notes.slice(0,2).join("；")+"。") : "体检结论：结构完整，接下来问的是深度。";
+  $("#diagCard").scrollIntoView({behavior:"smooth",block:"center"});
+  await sleep(700);
+
+  var qs=pickQuestions(diag);
+  state.total=qs.length;
+  $("#reviewCard").style.display="block";
+  $("#qlist").innerHTML="";
+  $("#qcount").textContent="共 "+qs.length+" 题 · 按你的薄弱项排序";
+  for(var i=0;i<qs.length;i++){
+    var el=qCard(qs[i],i);
+    $("#qlist").appendChild(el);
+    el.scrollIntoView({behavior:"smooth",block:"center"});
+    await sleep(500);
+  }
+  buildFinal(qs,diag);
+  $("#btnRun").disabled=false; $("#btnDemo").disabled=false;
+}
+
+$("#btnDl").onclick=function(){
+  var blob=new Blob([$("#mdOut").textContent],{type:"text/markdown;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="答辩作战卡.md"; a.click();
+  toast("已下载，可以直接贴进你的文档");
+};
+
+async function demoAnswer(){
+  await sleep(800);
+  var first=$("#qlist").querySelector(".q");
+  if(!first) return;
+  first.querySelector(".qt").click();
+  await sleep(350);
+  first.querySelector("textarea").value="没测过具体数字。目前 3 个同学用过，说比手动整理快，但没计时。下一步找 20 人做对照，各记一次用时。";
+  await sleep(400);
+  first.querySelector("button").click();
+  await sleep(1200);
+}
+
+$("#btnDemo").onclick=async function(){
+  var seq=["course","club"];
+  for(var i=0;i<seq.length;i++){
+    state.type=seq[i];
+    document.querySelectorAll(".type").forEach(function(x){x.classList.toggle("on",x.dataset.k===seq[i])});
+    $("#src").value=SAMPLES[seq[i]];
+    $("#src").dispatchEvent(new Event("input"));
+    await sleep(450);
+    await run();
+    if(i===0){ await demoAnswer(); }
+    toast("60 秒演示 "+(i+1)+"/2 完成");
+    await sleep(1800);
+  }
+  toast("演示结束 —— 这就是评委看到的一整条链");
+};
+
+if(location.hash==="#auto"){ setTimeout(function(){ $("#btnDemo").click(); }, 300); }
+async function autoShot(){
+  var h=location.hash;
+  if(h==="#s2"){ $("#src").value=SAMPLES.course; $("#src").dispatchEvent(new Event("input")); await run(); $("#diagCard").scrollIntoView({block:"start"}); }
+  if(h==="#s3"){ $("#src").value=SAMPLES.course; $("#src").dispatchEvent(new Event("input")); await run();
+    var f=$("#qlist").querySelector(".q"); f.querySelector(".qt").click();
+    f.querySelector("textarea").value="没测过具体数字。目前 3 个同学用过，说比手动整理快，但没计时。下一步找 20 人做对照，各记一次用时。";
+    f.querySelector("button").click(); $("#qlist").scrollIntoView({block:"start"}); }
+  if(h==="#s4"){ $("#src").value=SAMPLES.course; $("#src").dispatchEvent(new Event("input")); await run(); $("#finalCard").scrollIntoView({block:"start"}); }
+  if(h==="#s1"){ window.scrollTo(0,0); }
+}
+if(/^#s[1-4]$/.test(location.hash)){ setTimeout(autoShot, 260); }
+if(location.hash==="#card"){ setTimeout(function(){ $("#src").value=SAMPLES.course; $("#src").dispatchEvent(new Event("input")); run(); }, 200); }
+</script>
+</body>
+</html>
